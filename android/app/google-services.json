@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "811404531356",
+    "project_id": "mygui-fbc2a",
+    "storage_bucket": "mygui-fbc2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811404531356:android:db3f19f6793e3eace0ff59",
+        "android_client_info": {
+          "package_name": "com.atakmyloc.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "811404531356-klv6hlv7kan5tg4qqktctbp6unnn2hud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCddkIAyKpeskQej4KoFPDGVUvEw--isZM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "811404531356-klv6hlv7kan5tg4qqktctbp6unnn2hud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
