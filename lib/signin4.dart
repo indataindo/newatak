@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_map_live/res/custom_colors.dart';
 import 'package:google_map_live/restapi/restApi.dart';
 import 'package:google_map_live/screens/botomnavy.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -146,6 +148,7 @@ class _Signin4PageState extends State<Signin4Page> {
   @override
   void initState() {
     super.initState();
+    _requestpermision();
   }
 
   @override
@@ -156,100 +159,116 @@ class _Signin4PageState extends State<Signin4Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: <Widget>[
-        //  Center(child: Image.asset('assets/867087.png', height: 130)),
-        SizedBox(
-          height: 10,
-        ),
-        Text('Sign In',
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.tealAccent.shade700)),
-        TextFormField(
-          controller: email,
-          keyboardType: TextInputType.emailAddress,
-          style: TextStyle(color: Colors.amber),
-          decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: _mainColor, width: 2.0)),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _underlineColor),
-            ),
-            labelText: 'Email',
-            labelStyle: TextStyle(color: Colors.amber),
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        TextField(
-          controller: password,
-          obscureText: _obscureText,
-          style: TextStyle(color: Colors.amber),
-          decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-                borderSide:
-                    BorderSide(color: Colors.tealAccent.shade400, width: 2.0)),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _underlineColor),
-            ),
-            labelText: 'Password',
-            labelStyle: TextStyle(color: _color2),
-            suffixIcon: IconButton(
-                icon: Icon(_iconVisible, color: Colors.grey[400], size: 20),
-                onPressed: () {
-                  _toggleObscureText();
-                }),
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        TextButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) => Colors.tealAccent.shade700,
+        backgroundColor: CustomColors.firebaseNavy,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                //  Center(child: Image.asset('assets/867087.png', height: 130)),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 3,
+                ),
+                Text('Sign In',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.tealAccent.shade700)),
+                TextFormField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(color: Colors.amber),
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: _mainColor, width: 2.0)),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: _underlineColor),
+                    ),
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.amber),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: password,
+                  obscureText: _obscureText,
+                  style: TextStyle(color: Colors.amber),
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.tealAccent.shade400, width: 2.0)),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: _underlineColor),
+                    ),
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: _color2),
+                    suffixIcon: IconButton(
+                        icon: Icon(_iconVisible,
+                            color: Colors.grey[400], size: 20),
+                        onPressed: () {
+                          _toggleObscureText();
+                        }),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) =>
+                            Colors.tealAccent.shade700,
+                      ),
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.transparent),
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3.0),
+                      )),
+                    ),
+                    onPressed: () {
+                      registrasi();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Text(
+                        'LOGIN',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    )),
+                SizedBox(
+                  height: 20,
+                ),
+/*
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  Fluttertoast.showToast(
+                      msg: 'Click signup', toastLength: Toast.LENGTH_SHORT);
+                  FocusScope.of(context).unfocus();
+                },
               ),
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(3.0),
-              )),
             ),
-            onPressed: () {
-              registrasi();
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(
-                'LOGIN',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-                textAlign: TextAlign.center,
-              ),
-            )),
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Center(
-          child: GestureDetector(
-            onTap: () {
-              Fluttertoast.showToast(
-                  msg: 'Click signup', toastLength: Toast.LENGTH_SHORT);
-              FocusScope.of(context).unfocus();
-            },
+            */
+              ],
+            ),
           ),
-        ),
-      ],
-    ));
+        ));
+  }
+
+  _requestpermision() async {
+    var status = await Permission.location.request();
+    if (status.isGranted) {
+      print("OK");
+    } else if (status.isDenied) {
+      _requestpermision();
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+    }
   }
 }

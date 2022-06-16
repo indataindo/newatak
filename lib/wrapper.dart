@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_map_live/restapi/restApi.dart';
 import 'package:google_map_live/screens/botomnavy.dart';
+import 'package:google_map_live/screens/dasboard.dart';
 import 'package:google_map_live/signin4.dart';
 import 'package:google_map_live/splash.dart';
 
@@ -21,10 +23,6 @@ class Wrapperr extends StatefulWidget {
 }
 
 class _WrapperrState extends State<Wrapperr> {
-
-
-
-
   bool _isLoading = false;
   String idku = "";
   String id = "";
@@ -37,27 +35,40 @@ class _WrapperrState extends State<Wrapperr> {
     setState(() {
       _isLoading = false;
       idku = id;
-      
+      print("ini idku");
+      print(idku);
     });
   }
 
   void initState() {
     // TODO: implement initState
     super.initState();
-    getProfiles();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
    
+    getProfiles();
+    // _requestpermision();
   }
 
   @override
   Widget build(BuildContext context) {
     return _isLoading
         ? CircularProgressIndicator()
-        : idku != null
-            ? Navybuttom()
+        : idku != "null"
+            ? Dashboard()
             : Signin4Page();
   }
 
-
-
-
+  _requestpermision() async {
+    var status = await Permission.location.request();
+    if (status.isGranted) {
+    
+    } else if (status.isDenied) {
+      _requestpermision();
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+    }
+  }
 }

@@ -35,7 +35,7 @@ class _CrudfirebaseState extends State<Crudfirebase> {
               children: [
                 Container(
                   height: 200,
-                  child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  child: StreamBuilder(
                       stream: collectionstream,
                       builder: (context, snapshot) {
                         return Container(

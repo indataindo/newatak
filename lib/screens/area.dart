@@ -25,7 +25,7 @@ class _AreaState extends State<Area> {
 
   List<Marker> myMarker = [];
 
-  _hendleTap(LatLng tappoint) {
+    _hendleTap(LatLng tappoint) {
     print(tappoint);
     setState(() {
       //  myMarker = [];
@@ -45,14 +45,33 @@ class _AreaState extends State<Area> {
     super.initState();
     getLocation();
   }
+    int ty = 0;
+var maptype = MapType.normal;
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+  floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.black,
+        child: const Icon(Icons.map_outlined),
+        onPressed: () {
+          setState(() {
+            if (maptype == MapType.normal) {
+              this.maptype = MapType.hybrid;
+            } else {
+              this.maptype = MapType.normal;
+            }
+          });
+        },
+      ),
       body: currentPostion == null
           ? CircularProgressIndicator()
           : GoogleMap(
-              mapType: MapType.hybrid,
+              mapType: maptype,
               markers: Set.from(myMarker),
               onTap: _hendleTap,
               myLocationEnabled: true,

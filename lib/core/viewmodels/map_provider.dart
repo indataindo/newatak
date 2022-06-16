@@ -135,7 +135,6 @@ class MapProvider extends ChangeNotifier {
               polyMaker.location[0].latitude, polyMaker.location[0].longitude),
           _polyIcon,
           title: polyMaker.title);
-          
     }
     notifyListeners();
   }
@@ -205,6 +204,7 @@ class MapProvider extends ChangeNotifier {
       if (_uniqueID == "") {
         _uniqueID = Random().nextInt(10000).toString();
       }
+      _tempLocation.add(_location);
 
       setMarkerLocation(_tempLocation.length.toString(), _location, _pointIcon);
       setTempToPolygon();
@@ -271,39 +271,36 @@ class MapProvider extends ChangeNotifier {
   //Function to save polygon to database
   void savePolygon(
       TextEditingController titleController, BuildContext context) {
-    
-
     if (_tempLocation.length > 0) {
-      DialogUtils.showReport(context, "Menyimpan Area", titleController,
-          () async {
+      DialogUtils.showReport(context, "Save Area", titleController, () async {
         Navigator.pop(context);
-
+        print("ini datatemp location");
+        print(_tempLocation);
         //Inserting to database
         var polyMakerModel = PolyMakerModel(
             title: titleController.text,
+
             location: _tempLocation
                 .map((_loc) => LocationModel.fromMap(
-                    {"latitude": _loc.latitude, "longitude": _loc.longitude}))
+                    {"latitude": _loc.latitude.toString(), "longitude": _loc.longitude.toString()}))
                 .toList());
 
-        try {
 
-      
+        try {
           bool result = await polyMakerServices.create(polyMakerModel);
+
           if (result) {
-            DialogUtils.showDialogWarning(
-                context,
-                "Menyimpan Area",
-                "Berhasil Menyimpan ",
-                () => Navigator.pop(context));
+            DialogUtils.showDialogWarning(context, "Menyimpan Area",
+                "Berhasil Menyimpan ", () => Navigator.pop(context));
           }
           changeEditMode();
-
         } catch (e) {
           DialogUtils.showDialogWarning(context, "Gagal Menyimpan",
               "Gagal Menyimpan lokasi ", () => Navigator.pop(context));
           changeEditMode();
         }
+
+        
       });
     }
   }

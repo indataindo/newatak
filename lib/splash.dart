@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_map_live/onboarding.dart';
+import 'package:google_map_live/signin4.dart';
 
 
 class Spash extends StatefulWidget {
@@ -28,7 +29,7 @@ class _SpashState extends State<Spash> with SingleTickerProviderStateMixin {
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => OnBoardingPage()));
+              MaterialPageRoute(builder: (context) => Signin4Page()));
         } else {
           controller?.forward();
         }
@@ -51,7 +52,8 @@ class _SpashState extends State<Spash> with SingleTickerProviderStateMixin {
             children: [
               Column(
                 children: [
-                //  SizedBox(child: Image.asset('assets/Logos-01.png')),
+                  Text("Selamat Datang di AMART"),
+                  SizedBox(child: Image.asset('assets/867087.png')),
                 ],
               ),
           

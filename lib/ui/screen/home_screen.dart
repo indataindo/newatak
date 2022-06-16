@@ -48,7 +48,7 @@ class _HomeBodyState extends State<HomeBody> {
                         compassEnabled: false,
                         tiltGesturesEnabled: false,
                         markers: mapProv.markers,
-                        mapType: MapType.normal,
+                        mapType: MapType.hybrid,
                         initialCameraPosition: mapProv.cameraPosition,
                         onMapCreated: mapProv.onMapCreated,
                         mapToolbarEnabled: false,

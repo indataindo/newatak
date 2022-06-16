@@ -15,12 +15,13 @@ class Tracking extends StatefulWidget {
 }
 
 class _TrackingState extends State<Tracking> {
+  int isLoading = 0;
   GoogleMapController mycontroller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final LatLng _currentPosition =
       LatLng(-0.8971395757503112, 100.3507166778259);
 
-  void initMarker(specifi, specifyid) async {
+  initMarker(specifi, specifyid) async {
     var markerIDval = specifyid;
     final MarkerId markerId = MarkerId(markerIDval);
 
@@ -32,6 +33,7 @@ class _TrackingState extends State<Tracking> {
       ),
       position: LatLng(specifi['latitude'], specifi['longitude']),
     );
+
     setState(() {
       markers[markerId] = marker;
     });
@@ -57,7 +59,6 @@ class _TrackingState extends State<Tracking> {
   final loc.Location location = loc.Location();
   StreamSubscription<loc.LocationData> _locationSubscription;
 
-
   LatLng currentPostion;
   Location _location = Location();
 
@@ -68,22 +69,30 @@ class _TrackingState extends State<Tracking> {
           LatLng(_locationResult.latitude, _locationResult.longitude);
     });
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> collectionstream =
+      FirebaseFirestore.instance
+          .collection('location')
+          .where('online', isEqualTo: 1)
+          .snapshots();
+
+  bool _loadingjek = false;
   @override
   void initState() {
-    getmarkerdata();
+    // getmarkerdata();
     // TODO: implement initState
     super.initState();
 
-   getLocation();
+    getLocation();
 
-   // _requestpermision();
+    // _requestpermision();
     location.changeSettings(interval: 300, accuracy: loc.LocationAccuracy.high);
-    location.enableBackgroundMode(enable: true);
-
+    //location.enableBackgroundMode(enable: true);
   }
 
   @override
   Widget build(BuildContext context) {
+/*
     Set<Marker> getmarker() {
       return <Marker>[
         Marker(
@@ -93,49 +102,39 @@ class _TrackingState extends State<Tracking> {
             infoWindow: InfoWindow(title: "belajar"))
       ].toSet();
     }
-
-    return Scaffold(
-      body: currentPostion==null?Center(child: CircularProgressIndicator()):
-      
-      
-       StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('location')
-              .where('online', isEqualTo: 1)
-              .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            for (int i = 0; i < snapshot.data.docs.length; i++) {
-              initMarker(
-                  snapshot.data.docs[i].data(), snapshot.data.docs[i].id);
-            }
-            return GoogleMap(
-               // polygons: myPolygon(),
-                markers: Set<Marker>.of(markers.values),
-                onMapCreated: (GoogleMapController controller) {
-                  mycontroller = controller;
-                },
-              myLocationEnabled: true,
-                initialCameraPosition: CameraPosition(
-                    target: currentPostion,
-                    zoom: 20));
-/*
-          if (snapshot.hasData) {
-            for (int i = 0; i < snapshot.data.docs.length; i++) {
-              print("ini data lokasi");
-              print(snapshot.data.docs[i]['latitude']);
-              print(snapshot.data.docs[i]['longitude']);
-            }
-          }
-          return Text("Please Wait");
 */
-          }),
+    return Scaffold(
+        body: currentPostion == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : StreamBuilder(
+                stream: collectionstream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    for (int i = 0; i < snapshot.data.docs.length; i++) {
+                      initMarker(snapshot.data.docs[i].data(),
+                          snapshot.data.docs[i].id);
+                    }
 
-      /*
+                    return GoogleMap(
+                        // polygons: myPolygon(),
+                        markers: Set<Marker>.of(markers.values),
+                        onMapCreated: (GoogleMapController controller) {
+                          mycontroller = controller;
+                        },
+                        mapType: MapType.hybrid,
+                        myLocationEnabled: true,
+                        initialCameraPosition:
+                            CameraPosition(target: currentPostion, zoom: 14.5));
+                  }
+                }),
+                
+        /*
       body: GoogleMap(
           markers: Set<Marker>.of(markers.values),
           onMapCreated: (GoogleMapController controller) {
@@ -145,6 +144,6 @@ class _TrackingState extends State<Tracking> {
               CameraPosition(target: _currentPosition, zoom: 15)),
 
 */
-    );
+        );
   }
 }

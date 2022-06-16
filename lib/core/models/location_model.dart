@@ -13,8 +13,8 @@ class LocationModel {
       latitude: kedoublelat,
       longitude: kedoublelang,
 
-       // latitude: map['latitude'],
-      //longitude: map['longitude'],
+        //latitude: map['latitude'],
+     // longitude: map['longitude'],
     );
   }
 

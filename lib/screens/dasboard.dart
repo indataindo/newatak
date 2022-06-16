@@ -1,12 +1,39 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_map_live/contohchat/chetscreen.dart';
 
-import 'package:google_map_live/contohmulti/multi.dart';
 import 'package:google_map_live/map.dart';
+import 'package:google_map_live/newgoto/home_screen.dart';
+import 'package:google_map_live/newgoto/screens/search_places_screen.dart';
+
+import 'package:google_map_live/screens/allkeranjang.dart';
+import 'package:google_map_live/screens/allkontak.dart';
+import 'package:google_map_live/screens/calculate/calculate.dart';
+import 'package:google_map_live/screens/casevac/addcasevac.dart';
+import 'package:google_map_live/screens/casevac/viewcasevac.dart';
+import 'package:google_map_live/screens/chatgroup.dart';
+import 'package:google_map_live/screens/getbookmark.dart';
+import 'package:google_map_live/screens/getfavorit.dart';
+import 'package:google_map_live/screens/goto/goto.dart';
+import 'package:google_map_live/screens/goto/searchplace.dart';
+import 'package:google_map_live/screens/imagelokasi/addlokasiimage.dart';
+import 'package:google_map_live/screens/imagelokasi/tambahimagecari.dart';
+import 'package:google_map_live/screens/imagelokasi/viewmarker.dart';
+import 'package:google_map_live/screens/liskontak.dart';
+import 'package:google_map_live/screens/mapfavorit.dart';
+import 'package:google_map_live/screens/redx/addredx.dart';
+import 'package:google_map_live/screens/redx/viewredx.dart';
+import 'package:google_map_live/screens/testscren.dart';
 import 'package:google_map_live/screens/traking.dart';
+import 'package:google_map_live/screens/vidio/addlokasividio.dart';
+import 'package:google_map_live/screens/vidio/tambahvidio.dart';
+import 'package:google_map_live/screens/vidio/tambahvidiocari.dart';
+import 'package:google_map_live/screens/vidio/viewvidio.dart';
+import 'package:google_map_live/ui/screen/home_screen.dart';
 import 'package:google_map_live/utils/database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -54,8 +81,10 @@ class _DashboardState extends State<Dashboard> {
   LatLng currentPostion;
   Location _location = Location();
 
+  int ty = 0;
   void getLocation() async {
     final loc.LocationData _locationResult = await location.getLocation();
+
     setState(() {
       currentPostion =
           LatLng(_locationResult.latitude, _locationResult.longitude);
@@ -83,23 +112,35 @@ class _DashboardState extends State<Dashboard> {
     return polygonSet;
   }
 
+  keluar() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      preferences.remove('id');
+      preferences.remove('nama_lengkap');
+      preferences.remove('no_wa');
+
+      preferences.commit();
+    });
+    exit(0);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getProfiles();
     getLocation();
-
     _requestpermision();
+
     location.changeSettings(interval: 300, accuracy: loc.LocationAccuracy.high);
-    location.enableBackgroundMode(enable: true);
+    // location.enableBackgroundMode(enable: true);
   }
 
   GoogleMapController mycontroller;
   static CameraPosition initialCameraPosition = CameraPosition(
       target: LatLng(-0.8971395757503112, 100.3507166778259), zoom: 14);
   Set<Marker> marke = {};
-
+  var maptype = MapType.normal;
   void _onMapCreatedd(GoogleMapController controller) {
     mycontroller = controller;
   }
@@ -110,6 +151,305 @@ class _DashboardState extends State<Dashboard> {
     CollectionReference location = firestore.collection('location');
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Text("AMARTA"),
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage('assets/atak_splash.png')),
+                  color: Colors.black26),
+            ),
+            ExpansionTile(
+              title: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchPlacesScreen()));
+                  },
+                  child: Text('Go To ')),
+            ),
+            ExpansionTile(
+              title: Text('Casevac'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Viewcasevac()));
+                            },
+                            child: Text('View')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Addcasevac()));
+                            },
+                            child: Text('Tambah')),
+                        SizedBox(height: 15),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('Map User Sharing'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Alluser()));
+                            },
+                            child: Text('Sharing Map')),
+                        SizedBox(height: 15),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('Map & Favorit'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Getfavorit()));
+                            },
+                            child: Text('Saving Favorit Map')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Getbookmark()));
+                            },
+                            child: Text('BookMark Map'))
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('GeoChat'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Allkontak()));
+                            },
+                            child: Text('List Contact')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Chatgroup()));
+                            },
+                            child: Text('Chat Group')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Liskontak()));
+                            },
+                            child: Text('Chat')),
+                        SizedBox(height: 15),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('Vidio Stream'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Addlokasividio()));
+                            },
+                            child: Text('Tambah Lokasi Vidio Stream')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Allvidio()));
+                            },
+                            child: Text('List Vidio')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Viewvidio()));
+                            },
+                            child: Text('View Vidio')),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('Image Lokasi'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Viewmarker()));
+                            },
+                            child: Text('View Image Galery')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Addlokasiimage()));
+                            },
+                            child: Text('Tambah Image')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Allimage()));
+                            },
+                            child: Text('Daftar Lokasi')),
+                        SizedBox(height: 15),
+                        InkWell(
+                            onTap: () {
+                              keluar();
+                            },
+                            child: Text('Logout')),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: Text('Exit'),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(height: 5),
+                        InkWell(
+                            onTap: () {
+                              keluar();
+                            },
+                            child: Text('Logout')),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.black,
+        child: const Icon(Icons.map_outlined),
+        onPressed: () {
+          setState(() {
+            if (maptype == MapType.normal) {
+              this.maptype = MapType.hybrid;
+            } else {
+              this.maptype = MapType.normal;
+            }
+          });
+        },
+      ),
       body: Stack(
         children: [
           currentPostion == null
@@ -120,7 +460,7 @@ class _DashboardState extends State<Dashboard> {
                   polygons: myPolygon(),
                   initialCameraPosition:
                       CameraPosition(target: currentPostion, zoom: 15),
-                  mapType: MapType.normal,
+                  mapType: maptype,
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                     //    mycontroller = controller;
@@ -134,148 +474,518 @@ class _DashboardState extends State<Dashboard> {
                           position: currentPostion)
                     }),
           Align(
-              alignment: Alignment.bottomCenter,
+              alignment: Alignment.topCenter,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                  BoxShadow(
-                      color: Colors.black12,
-                      offset: Offset(-5, 0),
-                      blurRadius: 15,
-                      spreadRadius: 3)
-                ]),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.70),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(-5, 0),
+                          blurRadius: 15,
+                          spreadRadius: 3)
+                    ]),
                 width: double.infinity,
-                height: 160,
+                height: 70,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width - 160,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Nama :",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 15),
-                              ),
-                              Text(
-                                nama_lengkap1,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "No Wa :",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 15),
-                              ),
-                              Text(
-                                no_wa1,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 1),
-                              child: StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection('location')
-                                    .where('userid', isEqualTo: idku)
-                                    .snapshots(),
-                                builder: (context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return Center(
-                                    child: ListView.builder(
-                                      itemCount: snapshot.data?.docs.length,
-                                      itemBuilder: (context, index) {
-                                        return InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Googlemap(snapshot.data
-                                                            .docs[index].id)));
-                                          },
-                                          child: Center(
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                    snapshot.data
-                                                        .docs[index]["latitude"]
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black)),
-                                                Text("<->"),
-                                                Text(
-                                                    snapshot
-                                                        .data
-                                                        .docs[index]
-                                                            ["longitude"]
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black)),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            height: 40,
-                            width: double.infinity,
-                          )
-                        ],
-                      ),
-                    ),
-                    Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Nama :",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 15),
+                                ),
+                                Text(
+                                  nama_lengkap1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "No Wa :",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 15),
+                                ),
+                                Text(
+                                  no_wa1,
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            /*
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 1),
+                                child: StreamBuilder(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('location')
+                                      .where('userid', isEqualTo: idku)
+                                      .snapshots(),
+                                  builder: (context,
+                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    return Center(
+                                      child: ListView.builder(
+                                        itemCount: snapshot.data?.docs.length,
+                                        itemBuilder: (context, index) {
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Googlemap(snapshot.data
+                                                              .docs[index].id)));
+                                            },
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                      snapshot.data
+                                                          .docs[index]["latitude"]
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black)),
+                                                  Text("<->"),
+                                                  Text(
+                                                      snapshot
+                                                          .data
+                                                          .docs[index]
+                                                              ["longitude"]
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black)),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              height: 40,
+                              width: double.infinity,
+                            )
+                            */
+                          ],
+                        ),
                         SizedBox(
-                          height: 15,
+                          width: 30,
                         ),
                         Container(
-                          height: 30,
-                          width: 130,
-                          child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              color: Colors.blue[900],
-                              child: Text(
-                                'Add Lokasi',
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.white),
-                              ),
-                              onPressed: () async {
-                                _getLocation();
+                          height: 60,
 
-                                Fluttertoast.showToast(
-                                    msg: " Lokasi Berhasil Ditambah");
-                              }),
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          // color: Colors.blue,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/addlokasi.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    /*
+                                    Text(
+                                      'Add Lokasi',
+                                      style: TextStyle(
+                                          fontSize: 10, color: Colors.white),
+                                    ),
+                                    */
+                                    onPressed: () async {
+                                      _getLocation();
+
+                                      Fluttertoast.showToast(
+                                          msg: " Lokasi Berhasil Ditambah");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/stopmylokasi.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      _stopListinglocation();
+                                      Fluttertoast.showToast(
+                                          msg: "Location Di Matikan");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/status_dot_green.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      _listenLocation();
+                                      Fluttertoast.showToast(
+                                          msg: "Location Di Hidupkan");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/carilokasi.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Testscreen()));
+                                      Fluttertoast.showToast(msg: "Tracking");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/addvidio.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Addlokasividio()));
+                                      Fluttertoast.showToast(msg: "Add Vidio");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/video_icon.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Viewvidio()));
+                                      Fluttertoast.showToast(msg: "View Vidio");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/ic_menu_quickpic.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Addlokasiimage()));
+                                      Fluttertoast.showToast(msg: "Add Image");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/ic_menu_casevac.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Viewcasevac()));
+                                      Fluttertoast.showToast(msg: "Casevac");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/red_full.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Addredx()));
+                                      Fluttertoast.showToast(msg: " Add Red X");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/enter_location_spot_red_pressed.9.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Viewredx()));
+                                      Fluttertoast.showToast(msg: "Red X");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/ic_menu_goto_nav.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SearchPlacesScreen()));
+                                      Fluttertoast.showToast(msg: "Go To");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/gpkg.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Alluser()));
+                                      Fluttertoast.showToast(
+                                          msg: "Sharing Map");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/lpt_white_star_drawable.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Getbookmark()));
+                                      Fluttertoast.showToast(msg: "Boork Map");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/cot_icon_sugp.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Getfavorit()));
+                                      Fluttertoast.showToast(
+                                          msg: "Favorit Map");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/untrusted.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Allkontak()));
+                                      Fluttertoast.showToast(
+                                          msg: "List Contact Map");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/telestrate_lit.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Chatgroup()));
+                                      Fluttertoast.showToast(msg: "Chat Group");
+                                    }),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                child: RaisedButton(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    color: Colors.black.withOpacity(0.15),
+                                    child: Image.asset(
+                                      'assets/rectangle_lit.png',
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Allkontak()));
+                                      Fluttertoast.showToast(msg: "Chat");
+                                    }),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 5,
-                        ),
+                        /*
+                       
                         Container(
                           height: 30,
                           width: 130,
@@ -334,11 +1044,12 @@ class _DashboardState extends State<Dashboard> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Tracking()));
+                                        builder: (context) => Testscreen()));
                               }),
-                        )
+                        ),
+                        */
                       ],
-                    )
+                    ),
                   ],
                 ),
               )),
